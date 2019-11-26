@@ -1,6 +1,15 @@
-let name = '';
-name = "aaaa";
-name = `bbbb
-asd
-fds`;
-console.log(name);
+const person = {
+    name    : 'hby',
+    age     : 21,
+    address : 'incheon',
+
+    getName(){
+        return this.name
+    }
+
+};
+
+console.log(person.name)
+console.log(person.getName)
+
+
