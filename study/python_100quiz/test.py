@@ -1,38 +1,34 @@
-import datetime
+# drinks = {
+#     'martini' : {'vodka', 'vermouth'},
+#     'black russian' : {'vodka', 'kahlua'},
+#     'white russian' : {'cream', 'kahlua', 'vodka'},
+#     'manhattan' : {'rye', 'vermouth', 'bitters'},
+#     'asdadazc' : {'orange juice', 'vodka'}
+# }
+#
+#
+# for name, content in drinks.items():
+#     if 'vodka' in content and not content & {'cream', 'vermouth'}:
+#         print(name)
+#
+# a = {1, 2}
+# b = {2, 3}
+#
+# print(a|b)
 
 
-d = datetime.datetime.strptime('2020-1-1', '%Y-%m-%d')
+def test_func(a, b):
+    print(id(a), id(b))
+    print(id(number1), id(number2))
+    a = 10
+    b = 24
+    print(id(a), id(b))
 
-c = datetime.datetime(2018, 5, 5)
 
+number1 = 1
+number2 = 2
 
-q = d - c
+test_func(number1,number2)
 
-e = datetime.datetime(2011, 2, 2)
-f = datetime.datetime(2012, 2, 2)
-print(type(e.day))
-print((f-e).days)
-print(type(e))
-print(type(f))
-print(type(f-e))
-print(q)
-print(type(q))
-print(q.days)
-print((f-e).days)
-
-x = 3 if False else 2
-print(x)
-
-y = dict()
-for q, w in zip([1,2,3],[4,5,6]):
-    y[q] = w
-
-print(y)
-u = {q: y for q, y in zip([1, 2, 3], [4, 5, 6])}
-print(u)
-z = [*iter(u.items())]
-print(z)
-list1 = [1,2,3,4,5]
-print(type(list1))
-print(type(iter(list1)))
-iter()
+print(id(number1), id(number2))
+print(number1, number2)

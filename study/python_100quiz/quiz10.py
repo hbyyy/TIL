@@ -1,3 +1,4 @@
+
 # star_num = int(input())
 #
 # star = '*'
