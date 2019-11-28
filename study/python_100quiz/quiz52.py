@@ -26,7 +26,7 @@ from copy import copy
 def qsort1(num_list):
     if len(num_list) <= 1:
         return num_list
-    pivot = num_list.pop(len(num_list)-1)
+    pivot = num_list.pop(len(num_list)//2)
     pivot_front_list = []
     pivot_back_list = []
     for i in range(len(num_list)):
@@ -38,6 +38,28 @@ def qsort1(num_list):
     return qsort1(pivot_front_list) + [pivot] + qsort1(pivot_back_list)
 
 
-print(qsort1([1,5,6,7,3,2]))
+list1 = [9,2]
+print(list1)
+print(qsort1(list1))
+print(list1)
 
-
+# def qsort2(num_list):
+#     if len(num_list) <= 1:
+#         return num_list
+#     pivot = len(num_list)//2
+#     pivot_front_list = []
+#     pivot_back_list = []
+#     for i in range(len(num_list)):
+#         if num_list[i] < num_list[pivot]:
+#             pivot_front_list.append(num_list[i])
+#         elif num_list[i] > num_list[pivot]:
+#             pivot_back_list.append(num_list[i])
+#         else:
+#             continue
+#
+#     return qsort2(pivot_front_list) + [num_list[pivot]] + qsort2(pivot_back_list)
+#
+# list1 = [1,6,9,2,3,4]
+# print(list1)
+# print(qsort2(list1))
+# print(list1)
