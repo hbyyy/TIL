@@ -16,6 +16,6 @@ bracket_str2 = '(이것은 바르지 않은 문자열입니다()())'
 
 temp_list = []
 for i in list(bracket_str1):
-    if
+    pass
 
 
