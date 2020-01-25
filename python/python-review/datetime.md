@@ -72,3 +72,5 @@ time.strftime('포멧', [struct_time])
 | %x   | 날짜를 출력, 현재 시간대 기준             | 05/19/18                          |
 | %X   | 시간을 출력, 현재 시간대 기준             | '11:44:22                         |
 
+#### datetime module
+
