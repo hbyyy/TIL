@@ -635,3 +635,342 @@ http://www.yes24.com/searchcorner/Search?keywordAd=&keyword=&domain=ALL&qdomain=
 
 
 이유로는, url에는 아스키 코드만 가능하다. 그러므로 한글은 
+
+
+
+
+
+## 201128
+
+
+
+#### 장고 secret 값 관리
+
+- 여러 외부에 노출되지 않아야 할 secret 값들이 존재한다.
+  - 네이버, 페이스북 등의 api를 사용하기 위한 시크릿 id
+  - 장고의 시크릿 키
+
+
+
+**방법**
+
+1. secret 값을 저장하는 별도의 파일을 지정
+2. secret 값을 환경변수에 지정
+3. secret 값을 외부 서비스에 저장하고 API 호출
+
+
+
+**별도의 파일을 지정**
+
+- json파일을 이용해 공개되지 않는 곳에 저장한다.
+- 가장 간단한 방법이지만 번거롭다.
+  - 동기화가 힘들다
+- dropbox나 드라이브를 사용하면 좀 더 편하다.
+
+
+
+**환경변수에 저장**
+
+- 쉘에서 env를 입력하면, 현재 적용되어 있는 환경변수 목록이 나온다.
+
+- 파이썬에서 os.environ['환경변수 키값'] 으로 저장되어 있는 환경변수를 이용할 수 있다.
+  - ![Screenshot from 2020-01-28 13-27-00](/home/hby/Pictures/Screenshot from 2020-01-28 13-27-00.png)
+
+
+
+**외부 서비스에 저장**
+
+- aws를 이용한다
+
+  - secret manager
+
+  - 1개에 0.5 달러, 1만번 호출시 0.4달러
+
+    
+
+
+
+#### 배포
+
+Request -> runserver -> Django
+
+
+
+**Docker**
+
+- 마이크로서비스 아키텍쳐
+  - 세세한 기능들을 다 따로 돌린다
+  - 회원가입 서버, 블로그 글 서버 등등
+  - 개발 난이도가 점점 올라감
+
+도커는 **컨테이너** 기반의 오픈소스 가상화 플랫폼
+
+
+
+docker login
+
+docker run ubuntu
+
+- ubuntu 이미지를 받아온다.
+
+`docker run --rm -it ubuntu /bin/bash`
+
+- --rm : 컨테이너를 종료하면 자동으로 삭제
+
+
+
+**기본적으로 컨테이너는 외부와 연결이 차단되어 있다**
+
+- host의 특정 포트를 container 의 특정 포트와 연결시켜 주어야 한다.
+
+`-p Host<port>-Container<port>`
+
+ex)`docker run --rm -it -p 8001:8000 python:3.7-slim /bin/bash`
+
+- -it : 쉘을 실행하려면 반드시 있어야 한다.
+  - 입력을 받을 수 있게 함
+
+
+
+**Dockerfile**
+
+- image를 커스텀해서 만들 수 있다.
+
+```dockerfile
+FROM        python:3.7-slim
+
+RUN         apt -y update && apt -y dist-upgrade
+RUN         pip install django
+
+WORKDIR     /srv
+RUN         mkdir sample
+WORKDIR     /srv/sample
+RUN         django-admin startproject mysite
+WORKDIR     /srv/sample/mysite
+
+CMD         python manage.py runserver 0:8000
+```
+
+- RUN, CMD 차이
+  - CMD는 한 번만 실행이 가능함
+    - 컨테이너를 만들고 실행 후 실행할 명령어를 쓴다.
+    - CMD로 실행되는 것은 프로세스
+      - 이 프로세스가 종료되면 컨테이너가 종료된다.
+  - 별도로 지정하지 않으면 FROM 에 있는 이미지의 CMD가 실행된다,
+
+
+
+```dockerfile
+FROM        python:3.7-slim
+
+RUN         apt -y update && apt -y dist-upgrade
+
+COPY        . /srv/instagram
+RUN         pip install -r /srv/instagram/requirements.txt
+
+WORKDIR     /src/instagram/app
+
+CMD         python manage.py runserver 0:8000
+```
+
+
+
+- 바뀌지 않은 것들은 캐싱을 이용하여 빠르게 된다.
+- 위 내용에서는 , COPY시에 소스코드가 한 글자라도 바뀐다면 COPY부터 모두 다시 실행할 것이다
+  - 효율이 나쁘다
+
+```dockerfile
+FROM        python:3.7-slim
+
+RUN         apt -y update && apt -y dist-upgrade
+
+#requirements를 /tmp/에 복사 후, pip install 을 실행
+COPY        ./requirements.txt /tmp/
+RUN         pip install -r /tmp/requirements.txt
+
+#소스코드 복사 후 runserver
+COPY        . /srv/instagram
+WORKDIR     /src/instagram/app
+CMD         python manage.py runserver 0:8000
+```
+
+- requirements가 바뀌는 경우가 소스코드가 바뀌는 경우보다 적으므로, 위처럼 분리해주면 효율이 더 좋아진다
+  - pip install을 계속 하지 않을 것 
+
+`docker system prune`
+
+​	- None으로 되어있는 이미지들을 삭제해 준다.
+
+**docker image repo에 올리기**
+
+`docker tag instagram lloasd33/wps-instagram`
+
+`docker tag instagram lloasd33/wps-instagram`
+
+
+
+**Docker 문제**
+
+- 터미널을 켜 도커를 설치하고, 도커를 설치한 터미널 외 다은 터미널을 켜서 도커를 이용하려 하면 아래의 문제가 생긴다.
+
+  ```shell
+  Got permission denied while trying to connect to the Docker daemon socket at unix:///var/run/docker.sock: Post http://%2Fvar%2Frun%2Fdocker.sock/v1.40/auth: dial unix /var/run/docker.sock: connect: permission denied
+  ```
+
+  - `sudo chmod 666 /var/run/docker.sock` 이 명령어로 해결할 수 있다. 
+- [stackoverflow](https://stackoverflow.com/questions/48957195/how-to-fix-docker-got-permission-denied-issue) : 문제에 대한 해결책 , 이해를 못 했다.
+
+
+
+
+## 200129
+
+#### docker image  최적화
+
+- 필요없는 파일들을 이미지에서 빼기
+
+
+
+**Pycharm ignore plugin**
+
+- setting 의 plugin에서 설치
+
+**.dockerignore**
+
+- 제외할 파일을 선택할 수 있다.
+- COPY 실행 시에도 dockerignore에 있는 파일은 빠진다.
+
+
+
+#### Poetry 를 사용한 파이썬 패키지 관리
+
+**Poetry 설치**
+
+`curl -sSL https://raw.githubusercontent.com/python-poetry/poetry/master/get-poetry.py | python`
+
+
+
+**`~/.zshrc`**
+
+```
+# pyenv의 PATH
+export PYENV_PATH=$HOME/.pyenv
+if which pyenv > /dev/null; then eval "$(pyenv init -)"; fi
+if which pyenv-virtualenv-init > /dev/null; then eval "$(pyenv virtualenv-init -)"; fi
+
+# poetry실행파일의 PATH가 pyenv의 PATH보다 우선되도록 설정합니다
+export PATH=$HOME/.poetry/bin:$PATH
+```
+
+
+
+#### AWS Secrets manager
+
+- 시크릿 값을 관리할 수 있는 매니저
+
+
+
+- 장고에서 이용
+
+  - `$HOME/.aws`
+
+    - **`config`**
+
+      - ```
+        [default]
+        region = ap-northeast-2
+        output = json
+        
+        ```
+
+    - **`credentials`**
+
+      - ```
+        [wps-secrets-manager]
+        aws_access_key_id = ?? <iam key>
+        aws_secret_access_key = ??<iam secret key>
+        ~                                                                    
+        ```
+
+      
+
+  - django-secrets-manager 패키지 사용
+
+    - **`config/settings.py`**
+
+    - ```python
+      from django_secrets import SECRETS
+      AWS_SECRETS_MANAGER_SECRETS_NAME = 'wps'
+      AWS_SECRETS_MANAGER_SECRETS_SECTION = 'instagram'
+      AWS_SECRETS_MANAGER_REGION_NAME = 'ap-northead-2'
+      AWS_SECRETS_MANAGER_PROFILE = 'wps-secrets-manager'
+      ```
+
+    
+
+  - boto3 session 이용
+
+    - **`config/settings.py`**
+
+    - ```python
+      secret_name = 'wps'
+      region_name = 'ap-northeast-2'
+      session = boto3.session.Session(
+          profile_name='wps-secrets-manager',
+          region_name=region_name
+      )
+      client = session.client(
+          service_name='secretsmanager',
+          region_name=region_name
+      )
+      
+      secret_string = client.get_secret_value(SecretId='wps')['SecretString']
+      secret = json.loads(secret_string)['instagram']
+      ```
+
+  - boto3 환경변수 이용
+
+  - **`shell`**
+
+    - ```shell
+      export AWS_ACCESS_KEY_ID=AKIA4RZG46Z5L5X7ITVK
+       export AWS_SECRET_ACCESS_KEY=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
+      
+      ```
+
+      
+
+      ```python
+      import boto3
+      
+      session = boto3.session.Session()
+      client = boto3.client(
+          service_name = 'secretsmanager',
+          region_name = 'ap-northeast-2'
+          )
+      ```
+
+      
+
+      
+
+      
+
+      **credential** 을 가져오는 순서
+
+      ```markdown
+      1. Passing credentials as parameters in the boto.client() method(client함수에 직접 넣음)
+      2. Passing credentials as parameters when creating a Session object(Session함수에 직접 넣음)
+      3. Environment variables(환경 변수)
+      4. Shared credential file (~/.aws/credentials)
+      5. AWS config file (~/.aws/config)
+      6. Assume Role provider
+      7. Boto2 config file (/etc/boto.cfg and ~/.boto)
+      8. Instance metadata service on an Amazon EC2 instance that has an IAM role configured
+      ```
+
+
+
+#### boto3
+
+(링크)[https://boto3.amazonaws.com/v1/documentation/api/latest/guide/secrets-manager.html]
