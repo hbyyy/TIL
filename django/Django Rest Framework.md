@@ -49,16 +49,19 @@
 
 
 
-## DRF tutorial
+## 200213 수업
+
+### Django의  slash 처리
+
+- APPEND_SLASH = True (settings)
+  - slash가 안 붙은 url이 오면 붙인 주소로 리다이렉트하라고 요청을 보낸다.
+
+trailling_slash
 
 
 
-#### 직렬화(serialization)란?
+### assentication
 
-- 스트림 전송을 위해 데이터를 일련의 바이트로 변형하는 작업
-- 일정한 규칙으로 데이터를 바이트로 변형시킨다
-  - 파이썬의 경우 pikle이 있다.
-- 주로 사용하는 것은 **JSON**
-
-
-
+- SessionAuthentication
+  - 장고의 Authentication 방식
+  - 헷갈리니 쓰지 않는걸 추천
