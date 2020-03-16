@@ -64,7 +64,7 @@ INSTALLED_APPS = [
 
 Snippet 모델에는 created, title, code, linenos, language, style 6가지 필드가 존재한다.
 
-튜토리얼에서는 코드 하이라이팅 기능을 구현하기 위해 pygmens 패키지를 사용한다.
+튜토리얼에서는 코드 하이라이팅 기능을 구현하기 위해 pygments 패키지를 사용한다.
 
 **`snippets/models.py`**
 
