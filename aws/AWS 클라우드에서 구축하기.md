@@ -72,3 +72,13 @@
 - CloudFormation Designser 로 템플릿 파일을 생성
 - 전체 프로세스의 인프라 구조를 구성해 놓을수 있다
 - 템플릿 파일로 바로 전체 프로세스를 생성 가능
+
+
+
+## 추가 요금이 없는 AWS 서비스
+
+- VPC
+- EB
+- auso scaling
+- cloudFormation
+- IAM
