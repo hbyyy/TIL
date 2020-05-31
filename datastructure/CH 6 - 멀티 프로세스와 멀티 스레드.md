@@ -70,33 +70,3 @@
 
 파이썬에서는 쓰레드를 이용하기 위해 threading 모듈을 사용한다.
 
-
-
-
-
-## subprocess. threading 모듈
-
-
-
-### subprocess 모듈
-
-subprocess 모듈은 부모-자식 프로세스 쌍을 생성하는 데 사용된다.
-
-부모 프로세스는 사용자에 의해 실행되고 부모 프로세스는 다른 일을 처리하는 자식 프로세스의 인스턴스를 실행한다.
-
-
-
-```python
-import subprocess
-subprocess.run(["echo", "이것은 subprocess 입니다"])
->> CompletedProcess(args=['echo', '이것은 subprocess 입니다'], returncode=0)
-subprocess.run(["sleep", "10"])
->> CompletedProcess(args=['sleep', '10'], returncode=0)
-```
-
-
-
-### threading 모듈
-
-스레드를 여러개 사용한다면,  스레드 간 데이터 공유가 어려워지게 된다. 또한 락과 데드락을 회피해야 한다.
-
